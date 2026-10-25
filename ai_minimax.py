@@ -1,5 +1,6 @@
 """Negamax search (plain or alpha-beta) with heuristic H1."""
 
+import time
 from typing import NamedTuple
 
 from game import Board, RED, YELLOW, ROWS, COLS
@@ -62,8 +63,14 @@ def _terminal_score(board: Board, depth_left: int):
     return None
 
 
-def _negamax(board, depth_left, alpha, beta, alphabeta, heuristic, nodes):
+class _Timeout(Exception):
+    pass
+
+
+def _negamax(board, depth_left, alpha, beta, alphabeta, heuristic, nodes, deadline=None):
     nodes[0] += 1
+    if deadline is not None and time.perf_counter() > deadline:
+        raise _Timeout
     term = _terminal_score(board, depth_left)
     if term is not None:
         return term
@@ -73,7 +80,7 @@ def _negamax(board, depth_left, alpha, beta, alphabeta, heuristic, nodes):
     for col in board.valid_moves():
         board.drop(col)
         try:
-            score = -_negamax(board, depth_left - 1, -beta, -alpha, alphabeta, heuristic, nodes)
+            score = -_negamax(board, depth_left - 1, -beta, -alpha, alphabeta, heuristic, nodes, deadline)
         finally:
             board.undo()
         if score > best:
@@ -85,23 +92,50 @@ def _negamax(board, depth_left, alpha, beta, alphabeta, heuristic, nodes):
     return best
 
 
-def search(board: Board, depth: int, alphabeta: bool = True, heuristic=h1) -> Result:
-    nodes = [1]
-    term = _terminal_score(board, depth)
-    if term is not None:
-        return Result(None, term, 1, depth)
+def _root(board, depth, alphabeta, heuristic, nodes, deadline=None):
+    nodes[0] += 1
     best_move, best, alpha = None, -_INF, -_INF
     for col in board.valid_moves():
         board.drop(col)
         try:
-            score = -_negamax(board, depth - 1, -_INF, -alpha, alphabeta, heuristic, nodes)
+            score = -_negamax(board, depth - 1, -_INF, -alpha, alphabeta, heuristic, nodes, deadline)
         finally:
             board.undo()
         if score > best:
             best_move, best = col, score
         if alphabeta:
             alpha = max(alpha, best)
-    return Result(best_move, best, nodes[0], depth)
+    return best_move, best
+
+
+def search(board: Board, depth: int, alphabeta: bool = True, heuristic=h1) -> Result:
+    term = _terminal_score(board, depth)
+    if term is not None:
+        return Result(None, term, 1, depth)
+    nodes = [0]
+    move, score = _root(board, depth, alphabeta, heuristic, nodes)
+    return Result(move, score, nodes[0], depth)
+
+
+def iterative_deepening(board: Board, time_limit: float, heuristic=h1, max_depth: int = 42) -> Result:
+    """Alpha-beta at depth 1, 2, ... until time runs out; depth 1 always completes.
+    Returns the deepest fully searched result; nodes include the aborted depth."""
+    term = _terminal_score(board, 0)
+    if term is not None:
+        return Result(None, term, 1, 0)
+    deadline = time.perf_counter() + time_limit
+    nodes = [0]
+    move, score = _root(board, 1, True, heuristic, nodes)
+    done = 1
+    for depth in range(2, max_depth + 1):
+        if abs(score) >= WIN_SCORE:
+            break
+        try:
+            move, score = _root(board, depth, True, heuristic, nodes, deadline)
+        except _Timeout:
+            break
+        done = depth
+    return Result(move, score, nodes[0], done)
 
 
 def _self_check():
@@ -126,6 +160,16 @@ def _self_check():
 
     done = Board.from_moves("0101010")
     assert search(done, 3).move is None and done.moves == [0, 1, 0, 1, 0, 1, 0]
+
+    b = Board.from_moves("3243")
+    before = list(b.moves)
+    r = iterative_deepening(b, 0.05)
+    assert b.moves == before and r.move in b.valid_moves() and r.depth >= 1
+    assert iterative_deepening(Board.from_moves(""), 0.0).depth == 1
+    assert iterative_deepening(Board.from_moves("001122"), 1.0).move == 3
+    assert iterative_deepening(Board.from_moves("0101010"), 0.1).move is None
+    slow = iterative_deepening(Board.from_moves(""), 0.5)
+    assert slow.move == search(Board.from_moves(""), slow.depth).move
     print("ai_minimax.py OK")
 
 

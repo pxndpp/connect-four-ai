@@ -182,6 +182,64 @@ def plot_matches(csv_path: Path, out_dir: Path) -> None:
     plt.close(fig)
 
 
+# --- minimax (iterative deepening) vs MCTS at equal time per move ---------------
+
+BUDGET_FIELDS = ["budget", "minimax_points", "mcts_points", "draws", "games",
+                 "mean_id_depth", "mean_mcts_iterations"]
+
+
+def run_budget(budgets: tuple[float, ...], out_csv: Path, openings_list: list[str] | None = None) -> list[dict]:
+    openings_list = openings() if openings_list is None else openings_list
+    out_csv.parent.mkdir(parents=True, exist_ok=True)
+    rows = []
+    with open(out_csv, "w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=BUDGET_FIELDS)
+        writer.writeheader()
+        for budget in budgets:
+            depths, iters = [], []
+            t0 = time.perf_counter()
+            s = match(f"{budget}s", id_agent(budget, depths),
+                      mcts_agent(budget, int(budget * 1000), iters), openings_list)
+            row = {"budget": budget, "minimax_points": s["a_points"], "mcts_points": s["b_points"],
+                   "draws": s["draws"], "games": 2 * len(openings_list),
+                   "mean_id_depth": round(statistics.mean(depths), 2),
+                   "mean_mcts_iterations": round(statistics.mean(iters))}
+            writer.writerow(row)
+            f.flush()
+            rows.append(row)
+            print(f"{budget}s/move: minimax {s['a_points']} vs MCTS {s['b_points']} (draws {s['draws']}),"
+                  f" ID depth {row['mean_id_depth']}, MCTS iters {row['mean_mcts_iterations']}"
+                  f"  ({time.perf_counter() - t0:.0f} s)", flush=True)
+    return rows
+
+
+def plot_budget(csv_path: Path, out_dir: Path) -> None:
+    with open(csv_path, newline="") as f:
+        rows = list(csv.DictReader(f))
+    labels = [f"{float(r['budget']):g} s" for r in rows]
+    pct = [100 * float(r["minimax_points"]) / int(r["games"]) for r in rows]
+    fig, (left, right) = plt.subplots(1, 2, figsize=(10, 4))
+    bars = left.bar(labels, pct)
+    left.bar_label(bars, fmt="%.1f%%")
+    left.axhline(50, color="grey", linestyle="--", linewidth=1)
+    left.set_ylim(0, 110)
+    left.set_xlabel("Time per move")
+    left.set_ylabel("Minimax (ID) score, % of games")
+    left.set_title("Minimax vs MCTS, equal time")
+    x = range(len(rows))
+    right.plot(x, [float(r["mean_id_depth"]) for r in rows], marker="o", color="C0", label="ID depth")
+    right.set_ylabel("Mean depth reached (minimax)", color="C0")
+    right.set_xticks(list(x), labels)
+    right.set_xlabel("Time per move")
+    twin = right.twinx()
+    twin.plot(x, [float(r["mean_mcts_iterations"]) for r in rows], marker="s", color="C1", label="MCTS iterations")
+    twin.set_ylabel("Mean MCTS iterations per move", color="C1")
+    right.set_title("Search effort per move")
+    fig.tight_layout()
+    fig.savefig(out_dir / "budget.png", dpi=150)
+    plt.close(fig)
+
+
 # --- entry points ---------------------------------------------------------------
 
 def main_nodes():
@@ -196,8 +254,14 @@ def main_matches():
     print(f"wrote {RESULTS / 'matches.csv'}, winrate.png")
 
 
-COMMANDS = {"nodes": [main_nodes], "matches": [main_matches]}
-COMMANDS["all"] = [main_nodes, main_matches]
+def main_budget():
+    run_budget((0.1, 0.5), RESULTS / "budget.csv")
+    plot_budget(RESULTS / "budget.csv", RESULTS)
+    print(f"wrote {RESULTS / 'budget.csv'}, budget.png")
+
+
+COMMANDS = {"nodes": [main_nodes], "matches": [main_matches], "budget": [main_budget]}
+COMMANDS["all"] = [main_nodes, main_matches, main_budget]
 
 
 def _self_check():
@@ -231,6 +295,14 @@ def _self_check():
         p.write_text("match,opening,red,yellow,result\nx,00,A,B,1\nx,00,B,A,0\n")
         plot_matches(p, Path(tmp))                            # A: 1 win + 1 draw → 75%
         assert (Path(tmp) / "winrate.png").exists()
+
+    with tempfile.TemporaryDirectory() as tmp:
+        rows = run_budget((0.01,), Path(tmp) / "b.csv", openings_list=["33"])
+        assert len(rows) == 1 and rows[0]["games"] == 2
+        assert rows[0]["minimax_points"] + rows[0]["mcts_points"] == 2
+        assert rows[0]["mean_id_depth"] >= 1 and rows[0]["mean_mcts_iterations"] >= 1
+        plot_budget(Path(tmp) / "b.csv", Path(tmp))
+        assert (Path(tmp) / "budget.png").exists()
     print("experiments.py OK")
 
 

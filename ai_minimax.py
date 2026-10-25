@@ -121,34 +121,42 @@ def _negamax(board, depth_left, alpha, beta, alphabeta, heuristic, nodes, deadli
     return best
 
 
-def _root(board, depth, alphabeta, heuristic, nodes, deadline=None):
+def _root(board, depth, alphabeta, heuristic, nodes, deadline=None, rng=None):
+    """With rng, children are searched with alpha = best - 1 (scores are ints), so a child
+    that ties the best gets its exact score; one of the tied moves is then picked at random."""
     nodes[0] += 1
     best_move, best, alpha = None, -_INF, -_INF
+    ties = []
     for col in board.valid_moves():
+        window = alpha - 1 if rng is not None and alpha != -_INF else alpha
         board.drop(col)
         try:
-            score = -_negamax(board, depth - 1, -_INF, -alpha, alphabeta, heuristic, nodes, deadline)
+            score = -_negamax(board, depth - 1, -_INF, -window, alphabeta, heuristic, nodes, deadline)
         finally:
             board.undo()
         if score > best:
-            best_move, best = col, score
+            best_move, best, ties = col, score, [col]
+        elif score == best:
+            ties.append(col)
         if alphabeta:
             alpha = max(alpha, best)
+    if rng is not None and len(ties) > 1:
+        best_move = rng.choice(ties)
     return best_move, best
 
 
-def search(board: Board, depth: int, alphabeta: bool = True, heuristic=h1) -> Result:
+def search(board: Board, depth: int, alphabeta: bool = True, heuristic=h1, rng=None) -> Result:
     if depth < 1:
         raise ValueError(f"depth must be >= 1, got {depth}")
     term = _terminal_score(board, 0)
     if term is not None:
         return Result(None, term, 1, 0)
     nodes = [0]
-    move, score = _root(board, depth, alphabeta, heuristic, nodes)
+    move, score = _root(board, depth, alphabeta, heuristic, nodes, rng=rng)
     return Result(move, score, nodes[0], depth)
 
 
-def iterative_deepening(board: Board, time_limit: float, heuristic=h1, max_depth: int = 42) -> Result:
+def iterative_deepening(board: Board, time_limit: float, heuristic=h1, max_depth: int = 42, rng=None) -> Result:
     """Alpha-beta at depth 1, 2, ... until time runs out; depth 1 always completes.
     Returns the deepest fully searched result; nodes include the aborted depth."""
     term = _terminal_score(board, 0)
@@ -156,13 +164,13 @@ def iterative_deepening(board: Board, time_limit: float, heuristic=h1, max_depth
         return Result(None, term, 1, 0)
     deadline = time.perf_counter() + time_limit
     nodes = [0]
-    move, score = _root(board, 1, True, heuristic, nodes)
+    move, score = _root(board, 1, True, heuristic, nodes, rng=rng)
     done = 1
     for depth in range(2, max_depth + 1):
         if abs(score) >= WIN_SCORE:
             break
         try:
-            move, score = _root(board, depth, True, heuristic, nodes, deadline)
+            move, score = _root(board, depth, True, heuristic, nodes, deadline, rng)
         except _Timeout:
             break
         done = depth
@@ -216,6 +224,17 @@ def _self_check():
     assert h2(b, RED) - h1(b, RED) == -5
     assert search(Board.from_moves("0101010"), 3) == Result(None, -WIN_SCORE, 1, 0)
     assert search(Board.from_moves("001122"), 4, heuristic=h2).move == 3
+
+    import random
+    flat = lambda b, p: 0                                  # every column ties
+    assert search(Board.from_moves(""), 1, heuristic=flat).move == 3
+    picks = {search(Board.from_moves(""), 2, heuristic=flat, rng=random.Random(s)).move for s in range(30)}
+    assert len(picks) > 1
+    for s in range(10):
+        r = search(Board.from_moves("3243"), 4, rng=random.Random(s))
+        assert r.score == search(Board.from_moves("3243"), 4).score
+    assert search(Board.from_moves("001122"), 4, rng=random.Random(1)).move == 3
+    assert iterative_deepening(Board.from_moves("001122"), 0.3, rng=random.Random(1)).move == 3
     print("ai_minimax.py OK")
 
 

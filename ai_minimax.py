@@ -109,6 +109,8 @@ def _root(board, depth, alphabeta, heuristic, nodes, deadline=None):
 
 
 def search(board: Board, depth: int, alphabeta: bool = True, heuristic=h1) -> Result:
+    if depth < 1:
+        raise ValueError(f"depth must be >= 1, got {depth}")
     term = _terminal_score(board, depth)
     if term is not None:
         return Result(None, term, 1, depth)
@@ -160,6 +162,12 @@ def _self_check():
 
     done = Board.from_moves("0101010")
     assert search(done, 3).move is None and done.moves == [0, 1, 0, 1, 0, 1, 0]
+    for bad in (0, -1):
+        try:
+            search(Board.from_moves("33"), bad)
+            assert False, f"search depth {bad} should raise"
+        except ValueError:
+            pass
 
     b = Board.from_moves("3243")
     before = list(b.moves)

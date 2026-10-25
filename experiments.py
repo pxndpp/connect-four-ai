@@ -226,14 +226,14 @@ def plot_budget(csv_path: Path, out_dir: Path) -> None:
     left.set_xlabel("Time per move")
     left.set_ylabel("Minimax (ID) score, % of games")
     left.set_title("Minimax vs MCTS, equal time")
-    x = range(len(rows))
-    right.plot(x, [float(r["mean_id_depth"]) for r in rows], marker="o", color="C0", label="ID depth")
-    right.set_ylabel("Mean depth reached (minimax)", color="C0")
-    right.set_xticks(list(x), labels)
+    # Bars labelled with both numbers: twin-axis lines overlap exactly when there are only two budgets.
+    depth = [float(r["mean_id_depth"]) for r in rows]
+    effort = right.bar(labels, depth, color="C0")
+    right.bar_label(effort, labels=[f"depth {d:.2f}\nMCTS {int(r['mean_mcts_iterations']):,} iters"
+                                    for d, r in zip(depth, rows)])
+    right.set_ylim(0, max(depth) * 1.3)
     right.set_xlabel("Time per move")
-    twin = right.twinx()
-    twin.plot(x, [float(r["mean_mcts_iterations"]) for r in rows], marker="s", color="C1", label="MCTS iterations")
-    twin.set_ylabel("Mean MCTS iterations per move", color="C1")
+    right.set_ylabel("Mean depth reached by minimax (ID)")
     right.set_title("Search effort per move")
     fig.tight_layout()
     fig.savefig(out_dir / "budget.png", dpi=150)

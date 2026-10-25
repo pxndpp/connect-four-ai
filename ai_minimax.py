@@ -54,6 +54,35 @@ def h1(board: Board, player: int) -> int:
     return score
 
 
+def h2(board: Board, player: int) -> int:
+    """H1, but a three whose empty cell is playable now counts more than a floating one:
+    own3 playable +8 / floating +4, opp3 playable -8 / floating -3."""
+    grid, heights = board.grid, board.heights
+    opp = YELLOW if player == RED else RED
+    score = 3 * sum(1 for r in range(ROWS) if grid[r][3] == player)
+    for cells in _WINDOWS:
+        own = theirs = 0
+        gap = None
+        for r, c in cells:
+            v = grid[r][c]
+            if v == player:
+                own += 1
+            elif v == opp:
+                theirs += 1
+            else:
+                gap = (r, c)
+        empty = 4 - own - theirs
+        if empty == 1:
+            playable = heights[gap[1]] == gap[0]
+            if own == 3:
+                score += 8 if playable else 4
+            elif theirs == 3:
+                score -= 8 if playable else 3
+        elif own == 2 and empty == 2:
+            score += 2
+    return score
+
+
 def _terminal_score(board: Board, depth_left: int):
     """Score for the side to move if the game is over, else None."""
     if board.last_move_won():
@@ -111,9 +140,9 @@ def _root(board, depth, alphabeta, heuristic, nodes, deadline=None):
 def search(board: Board, depth: int, alphabeta: bool = True, heuristic=h1) -> Result:
     if depth < 1:
         raise ValueError(f"depth must be >= 1, got {depth}")
-    term = _terminal_score(board, depth)
+    term = _terminal_score(board, 0)
     if term is not None:
-        return Result(None, term, 1, depth)
+        return Result(None, term, 1, 0)
     nodes = [0]
     move, score = _root(board, depth, alphabeta, heuristic, nodes)
     return Result(move, score, nodes[0], depth)
@@ -178,6 +207,15 @@ def _self_check():
     assert iterative_deepening(Board.from_moves("0101010"), 0.1).move is None
     slow = iterative_deepening(Board.from_moves(""), 0.5)
     assert slow.move == search(Board.from_moves(""), slow.depth).move
+
+    for pos in ("", "3", "33", "3243"):                      # no 3-in-a-window → same as H1
+        assert h2(Board.from_moves(pos), RED) == h1(Board.from_moves(pos), RED)
+    b = Board.from_moves("061625")                           # red three, playable now
+    assert h2(b, RED) - h1(b, RED) == 3
+    b = Board.from_moves("6001122")                          # red three floating, yellow three playable
+    assert h2(b, RED) - h1(b, RED) == -5
+    assert search(Board.from_moves("0101010"), 3) == Result(None, -WIN_SCORE, 1, 0)
+    assert search(Board.from_moves("001122"), 4, heuristic=h2).move == 3
     print("ai_minimax.py OK")
 
 

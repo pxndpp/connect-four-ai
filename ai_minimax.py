@@ -166,6 +166,7 @@ def iterative_deepening(board: Board, time_limit: float, heuristic=h1, max_depth
     nodes = [0]
     move, score = _root(board, 1, True, heuristic, nodes, rng=rng)
     done = 1
+    max_depth = min(max_depth, ROWS * COLS - len(board.moves))   # no deeper than the moves left
     for depth in range(2, max_depth + 1):
         if abs(score) >= WIN_SCORE:
             break
@@ -235,6 +236,8 @@ def _self_check():
         assert r.score == search(Board.from_moves("3243"), 4).score
     assert search(Board.from_moves("001122"), 4, rng=random.Random(1)).move == 3
     assert iterative_deepening(Board.from_moves("001122"), 0.3, rng=random.Random(1)).move == 3
+    one_left = Board.from_moves(("0213465" * 6)[:41])          # 1 empty cell → depth can't exceed 1
+    assert iterative_deepening(one_left, 1.0).depth == 1
     print("ai_minimax.py OK")
 
 

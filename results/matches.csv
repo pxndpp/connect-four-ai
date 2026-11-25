@@ -1,0 +1,491 @@
+match,opening,red,yellow,result
+d2 vs random,00,A,B,1
+d2 vs random,00,B,A,2
+d2 vs random,01,A,B,1
+d2 vs random,01,B,A,2
+d2 vs random,02,A,B,1
+d2 vs random,02,B,A,2
+d2 vs random,03,A,B,1
+d2 vs random,03,B,A,2
+d2 vs random,04,A,B,1
+d2 vs random,04,B,A,2
+d2 vs random,05,A,B,1
+d2 vs random,05,B,A,2
+d2 vs random,06,A,B,1
+d2 vs random,06,B,A,2
+d2 vs random,10,A,B,1
+d2 vs random,10,B,A,2
+d2 vs random,11,A,B,1
+d2 vs random,11,B,A,2
+d2 vs random,12,A,B,1
+d2 vs random,12,B,A,2
+d2 vs random,13,A,B,1
+d2 vs random,13,B,A,2
+d2 vs random,14,A,B,1
+d2 vs random,14,B,A,2
+d2 vs random,15,A,B,1
+d2 vs random,15,B,A,2
+d2 vs random,16,A,B,1
+d2 vs random,16,B,A,2
+d2 vs random,20,A,B,1
+d2 vs random,20,B,A,2
+d2 vs random,21,A,B,1
+d2 vs random,21,B,A,2
+d2 vs random,22,A,B,1
+d2 vs random,22,B,A,2
+d2 vs random,23,A,B,1
+d2 vs random,23,B,A,2
+d2 vs random,24,A,B,1
+d2 vs random,24,B,A,2
+d2 vs random,25,A,B,1
+d2 vs random,25,B,A,2
+d2 vs random,26,A,B,1
+d2 vs random,26,B,A,2
+d2 vs random,30,A,B,1
+d2 vs random,30,B,A,2
+d2 vs random,31,A,B,1
+d2 vs random,31,B,A,2
+d2 vs random,32,A,B,1
+d2 vs random,32,B,A,2
+d2 vs random,33,A,B,1
+d2 vs random,33,B,A,2
+d2 vs random,34,A,B,1
+d2 vs random,34,B,A,2
+d2 vs random,35,A,B,1
+d2 vs random,35,B,A,2
+d2 vs random,36,A,B,1
+d2 vs random,36,B,A,2
+d2 vs random,40,A,B,1
+d2 vs random,40,B,A,2
+d2 vs random,41,A,B,1
+d2 vs random,41,B,A,2
+d2 vs random,42,A,B,1
+d2 vs random,42,B,A,2
+d2 vs random,43,A,B,1
+d2 vs random,43,B,A,2
+d2 vs random,44,A,B,1
+d2 vs random,44,B,A,2
+d2 vs random,45,A,B,1
+d2 vs random,45,B,A,2
+d2 vs random,46,A,B,1
+d2 vs random,46,B,A,2
+d2 vs random,50,A,B,1
+d2 vs random,50,B,A,2
+d2 vs random,51,A,B,1
+d2 vs random,51,B,A,2
+d2 vs random,52,A,B,1
+d2 vs random,52,B,A,2
+d2 vs random,53,A,B,1
+d2 vs random,53,B,A,2
+d2 vs random,54,A,B,1
+d2 vs random,54,B,A,2
+d2 vs random,55,A,B,1
+d2 vs random,55,B,A,2
+d2 vs random,56,A,B,1
+d2 vs random,56,B,A,2
+d2 vs random,60,A,B,1
+d2 vs random,60,B,A,2
+d2 vs random,61,A,B,1
+d2 vs random,61,B,A,2
+d2 vs random,62,A,B,1
+d2 vs random,62,B,A,2
+d2 vs random,63,A,B,1
+d2 vs random,63,B,A,2
+d2 vs random,64,A,B,1
+d2 vs random,64,B,A,2
+d2 vs random,65,A,B,1
+d2 vs random,65,B,A,2
+d2 vs random,66,A,B,1
+d2 vs random,66,B,A,2
+d4 vs d2,00,A,B,1
+d4 vs d2,00,B,A,2
+d4 vs d2,01,A,B,1
+d4 vs d2,01,B,A,2
+d4 vs d2,02,A,B,1
+d4 vs d2,02,B,A,1
+d4 vs d2,03,A,B,2
+d4 vs d2,03,B,A,2
+d4 vs d2,04,A,B,1
+d4 vs d2,04,B,A,1
+d4 vs d2,05,A,B,2
+d4 vs d2,05,B,A,2
+d4 vs d2,06,A,B,1
+d4 vs d2,06,B,A,2
+d4 vs d2,10,A,B,1
+d4 vs d2,10,B,A,1
+d4 vs d2,11,A,B,1
+d4 vs d2,11,B,A,0
+d4 vs d2,12,A,B,1
+d4 vs d2,12,B,A,0
+d4 vs d2,13,A,B,2
+d4 vs d2,13,B,A,2
+d4 vs d2,14,A,B,1
+d4 vs d2,14,B,A,1
+d4 vs d2,15,A,B,2
+d4 vs d2,15,B,A,1
+d4 vs d2,16,A,B,2
+d4 vs d2,16,B,A,1
+d4 vs d2,20,A,B,1
+d4 vs d2,20,B,A,2
+d4 vs d2,21,A,B,2
+d4 vs d2,21,B,A,1
+d4 vs d2,22,A,B,1
+d4 vs d2,22,B,A,1
+d4 vs d2,23,A,B,2
+d4 vs d2,23,B,A,2
+d4 vs d2,24,A,B,1
+d4 vs d2,24,B,A,1
+d4 vs d2,25,A,B,2
+d4 vs d2,25,B,A,0
+d4 vs d2,26,A,B,2
+d4 vs d2,26,B,A,2
+d4 vs d2,30,A,B,1
+d4 vs d2,30,B,A,2
+d4 vs d2,31,A,B,2
+d4 vs d2,31,B,A,2
+d4 vs d2,32,A,B,2
+d4 vs d2,32,B,A,1
+d4 vs d2,33,A,B,1
+d4 vs d2,33,B,A,2
+d4 vs d2,34,A,B,2
+d4 vs d2,34,B,A,2
+d4 vs d2,35,A,B,2
+d4 vs d2,35,B,A,2
+d4 vs d2,36,A,B,1
+d4 vs d2,36,B,A,2
+d4 vs d2,40,A,B,2
+d4 vs d2,40,B,A,2
+d4 vs d2,41,A,B,2
+d4 vs d2,41,B,A,1
+d4 vs d2,42,A,B,1
+d4 vs d2,42,B,A,2
+d4 vs d2,43,A,B,0
+d4 vs d2,43,B,A,2
+d4 vs d2,44,A,B,1
+d4 vs d2,44,B,A,1
+d4 vs d2,45,A,B,2
+d4 vs d2,45,B,A,2
+d4 vs d2,46,A,B,1
+d4 vs d2,46,B,A,2
+d4 vs d2,50,A,B,2
+d4 vs d2,50,B,A,1
+d4 vs d2,51,A,B,2
+d4 vs d2,51,B,A,1
+d4 vs d2,52,A,B,1
+d4 vs d2,52,B,A,1
+d4 vs d2,53,A,B,2
+d4 vs d2,53,B,A,2
+d4 vs d2,54,A,B,1
+d4 vs d2,54,B,A,0
+d4 vs d2,55,A,B,1
+d4 vs d2,55,B,A,0
+d4 vs d2,56,A,B,2
+d4 vs d2,56,B,A,1
+d4 vs d2,60,A,B,1
+d4 vs d2,60,B,A,2
+d4 vs d2,61,A,B,2
+d4 vs d2,61,B,A,2
+d4 vs d2,62,A,B,1
+d4 vs d2,62,B,A,1
+d4 vs d2,63,A,B,2
+d4 vs d2,63,B,A,2
+d4 vs d2,64,A,B,1
+d4 vs d2,64,B,A,2
+d4 vs d2,65,A,B,1
+d4 vs d2,65,B,A,2
+d4 vs d2,66,A,B,1
+d4 vs d2,66,B,A,2
+d6 vs d4,00,A,B,1
+d6 vs d4,00,B,A,2
+d6 vs d4,01,A,B,1
+d6 vs d4,01,B,A,1
+d6 vs d4,02,A,B,2
+d6 vs d4,02,B,A,2
+d6 vs d4,03,A,B,1
+d6 vs d4,03,B,A,2
+d6 vs d4,04,A,B,1
+d6 vs d4,04,B,A,1
+d6 vs d4,05,A,B,2
+d6 vs d4,05,B,A,1
+d6 vs d4,06,A,B,1
+d6 vs d4,06,B,A,1
+d6 vs d4,10,A,B,2
+d6 vs d4,10,B,A,1
+d6 vs d4,11,A,B,1
+d6 vs d4,11,B,A,1
+d6 vs d4,12,A,B,2
+d6 vs d4,12,B,A,2
+d6 vs d4,13,A,B,1
+d6 vs d4,13,B,A,1
+d6 vs d4,14,A,B,1
+d6 vs d4,14,B,A,1
+d6 vs d4,15,A,B,2
+d6 vs d4,15,B,A,2
+d6 vs d4,16,A,B,2
+d6 vs d4,16,B,A,1
+d6 vs d4,20,A,B,1
+d6 vs d4,20,B,A,2
+d6 vs d4,21,A,B,1
+d6 vs d4,21,B,A,0
+d6 vs d4,22,A,B,2
+d6 vs d4,22,B,A,2
+d6 vs d4,23,A,B,1
+d6 vs d4,23,B,A,2
+d6 vs d4,24,A,B,2
+d6 vs d4,24,B,A,1
+d6 vs d4,25,A,B,2
+d6 vs d4,25,B,A,2
+d6 vs d4,26,A,B,1
+d6 vs d4,26,B,A,2
+d6 vs d4,30,A,B,1
+d6 vs d4,30,B,A,2
+d6 vs d4,31,A,B,1
+d6 vs d4,31,B,A,2
+d6 vs d4,32,A,B,2
+d6 vs d4,32,B,A,2
+d6 vs d4,33,A,B,1
+d6 vs d4,33,B,A,0
+d6 vs d4,34,A,B,2
+d6 vs d4,34,B,A,2
+d6 vs d4,35,A,B,1
+d6 vs d4,35,B,A,2
+d6 vs d4,36,A,B,1
+d6 vs d4,36,B,A,2
+d6 vs d4,40,A,B,1
+d6 vs d4,40,B,A,2
+d6 vs d4,41,A,B,0
+d6 vs d4,41,B,A,2
+d6 vs d4,42,A,B,2
+d6 vs d4,42,B,A,1
+d6 vs d4,43,A,B,1
+d6 vs d4,43,B,A,2
+d6 vs d4,44,A,B,2
+d6 vs d4,44,B,A,2
+d6 vs d4,45,A,B,1
+d6 vs d4,45,B,A,0
+d6 vs d4,46,A,B,1
+d6 vs d4,46,B,A,2
+d6 vs d4,50,A,B,2
+d6 vs d4,50,B,A,1
+d6 vs d4,51,A,B,2
+d6 vs d4,51,B,A,2
+d6 vs d4,52,A,B,1
+d6 vs d4,52,B,A,2
+d6 vs d4,53,A,B,1
+d6 vs d4,53,B,A,1
+d6 vs d4,54,A,B,2
+d6 vs d4,54,B,A,2
+d6 vs d4,55,A,B,1
+d6 vs d4,55,B,A,1
+d6 vs d4,56,A,B,1
+d6 vs d4,56,B,A,2
+d6 vs d4,60,A,B,1
+d6 vs d4,60,B,A,1
+d6 vs d4,61,A,B,2
+d6 vs d4,61,B,A,1
+d6 vs d4,62,A,B,1
+d6 vs d4,62,B,A,1
+d6 vs d4,63,A,B,1
+d6 vs d4,63,B,A,2
+d6 vs d4,64,A,B,2
+d6 vs d4,64,B,A,2
+d6 vs d4,65,A,B,1
+d6 vs d4,65,B,A,1
+d6 vs d4,66,A,B,1
+d6 vs d4,66,B,A,2
+d6 vs d2,00,A,B,1
+d6 vs d2,00,B,A,2
+d6 vs d2,01,A,B,1
+d6 vs d2,01,B,A,2
+d6 vs d2,02,A,B,1
+d6 vs d2,02,B,A,2
+d6 vs d2,03,A,B,1
+d6 vs d2,03,B,A,2
+d6 vs d2,04,A,B,1
+d6 vs d2,04,B,A,2
+d6 vs d2,05,A,B,1
+d6 vs d2,05,B,A,2
+d6 vs d2,06,A,B,1
+d6 vs d2,06,B,A,2
+d6 vs d2,10,A,B,1
+d6 vs d2,10,B,A,2
+d6 vs d2,11,A,B,1
+d6 vs d2,11,B,A,2
+d6 vs d2,12,A,B,1
+d6 vs d2,12,B,A,2
+d6 vs d2,13,A,B,1
+d6 vs d2,13,B,A,2
+d6 vs d2,14,A,B,1
+d6 vs d2,14,B,A,1
+d6 vs d2,15,A,B,1
+d6 vs d2,15,B,A,2
+d6 vs d2,16,A,B,2
+d6 vs d2,16,B,A,2
+d6 vs d2,20,A,B,2
+d6 vs d2,20,B,A,2
+d6 vs d2,21,A,B,2
+d6 vs d2,21,B,A,1
+d6 vs d2,22,A,B,1
+d6 vs d2,22,B,A,2
+d6 vs d2,23,A,B,1
+d6 vs d2,23,B,A,2
+d6 vs d2,24,A,B,1
+d6 vs d2,24,B,A,2
+d6 vs d2,25,A,B,2
+d6 vs d2,25,B,A,2
+d6 vs d2,26,A,B,1
+d6 vs d2,26,B,A,2
+d6 vs d2,30,A,B,1
+d6 vs d2,30,B,A,2
+d6 vs d2,31,A,B,2
+d6 vs d2,31,B,A,2
+d6 vs d2,32,A,B,1
+d6 vs d2,32,B,A,2
+d6 vs d2,33,A,B,1
+d6 vs d2,33,B,A,2
+d6 vs d2,34,A,B,1
+d6 vs d2,34,B,A,2
+d6 vs d2,35,A,B,2
+d6 vs d2,35,B,A,2
+d6 vs d2,36,A,B,1
+d6 vs d2,36,B,A,2
+d6 vs d2,40,A,B,1
+d6 vs d2,40,B,A,2
+d6 vs d2,41,A,B,1
+d6 vs d2,41,B,A,2
+d6 vs d2,42,A,B,1
+d6 vs d2,42,B,A,1
+d6 vs d2,43,A,B,1
+d6 vs d2,43,B,A,2
+d6 vs d2,44,A,B,1
+d6 vs d2,44,B,A,2
+d6 vs d2,45,A,B,2
+d6 vs d2,45,B,A,0
+d6 vs d2,46,A,B,2
+d6 vs d2,46,B,A,2
+d6 vs d2,50,A,B,2
+d6 vs d2,50,B,A,2
+d6 vs d2,51,A,B,1
+d6 vs d2,51,B,A,2
+d6 vs d2,52,A,B,1
+d6 vs d2,52,B,A,2
+d6 vs d2,53,A,B,1
+d6 vs d2,53,B,A,2
+d6 vs d2,54,A,B,1
+d6 vs d2,54,B,A,2
+d6 vs d2,55,A,B,1
+d6 vs d2,55,B,A,2
+d6 vs d2,56,A,B,1
+d6 vs d2,56,B,A,2
+d6 vs d2,60,A,B,1
+d6 vs d2,60,B,A,2
+d6 vs d2,61,A,B,1
+d6 vs d2,61,B,A,2
+d6 vs d2,62,A,B,1
+d6 vs d2,62,B,A,1
+d6 vs d2,63,A,B,1
+d6 vs d2,63,B,A,2
+d6 vs d2,64,A,B,1
+d6 vs d2,64,B,A,2
+d6 vs d2,65,A,B,1
+d6 vs d2,65,B,A,1
+d6 vs d2,66,A,B,1
+d6 vs d2,66,B,A,2
+H2 vs H1 (d4),00,A,B,1
+H2 vs H1 (d4),00,B,A,1
+H2 vs H1 (d4),01,A,B,2
+H2 vs H1 (d4),01,B,A,1
+H2 vs H1 (d4),02,A,B,1
+H2 vs H1 (d4),02,B,A,1
+H2 vs H1 (d4),03,A,B,2
+H2 vs H1 (d4),03,B,A,2
+H2 vs H1 (d4),04,A,B,1
+H2 vs H1 (d4),04,B,A,1
+H2 vs H1 (d4),05,A,B,2
+H2 vs H1 (d4),05,B,A,1
+H2 vs H1 (d4),06,A,B,1
+H2 vs H1 (d4),06,B,A,2
+H2 vs H1 (d4),10,A,B,2
+H2 vs H1 (d4),10,B,A,1
+H2 vs H1 (d4),11,A,B,1
+H2 vs H1 (d4),11,B,A,2
+H2 vs H1 (d4),12,A,B,2
+H2 vs H1 (d4),12,B,A,1
+H2 vs H1 (d4),13,A,B,2
+H2 vs H1 (d4),13,B,A,1
+H2 vs H1 (d4),14,A,B,1
+H2 vs H1 (d4),14,B,A,2
+H2 vs H1 (d4),15,A,B,2
+H2 vs H1 (d4),15,B,A,2
+H2 vs H1 (d4),16,A,B,1
+H2 vs H1 (d4),16,B,A,2
+H2 vs H1 (d4),20,A,B,2
+H2 vs H1 (d4),20,B,A,2
+H2 vs H1 (d4),21,A,B,2
+H2 vs H1 (d4),21,B,A,2
+H2 vs H1 (d4),22,A,B,2
+H2 vs H1 (d4),22,B,A,2
+H2 vs H1 (d4),23,A,B,2
+H2 vs H1 (d4),23,B,A,1
+H2 vs H1 (d4),24,A,B,2
+H2 vs H1 (d4),24,B,A,2
+H2 vs H1 (d4),25,A,B,0
+H2 vs H1 (d4),25,B,A,2
+H2 vs H1 (d4),26,A,B,2
+H2 vs H1 (d4),26,B,A,2
+H2 vs H1 (d4),30,A,B,2
+H2 vs H1 (d4),30,B,A,2
+H2 vs H1 (d4),31,A,B,2
+H2 vs H1 (d4),31,B,A,2
+H2 vs H1 (d4),32,A,B,1
+H2 vs H1 (d4),32,B,A,1
+H2 vs H1 (d4),33,A,B,1
+H2 vs H1 (d4),33,B,A,1
+H2 vs H1 (d4),34,A,B,0
+H2 vs H1 (d4),34,B,A,1
+H2 vs H1 (d4),35,A,B,2
+H2 vs H1 (d4),35,B,A,2
+H2 vs H1 (d4),36,A,B,2
+H2 vs H1 (d4),36,B,A,1
+H2 vs H1 (d4),40,A,B,2
+H2 vs H1 (d4),40,B,A,2
+H2 vs H1 (d4),41,A,B,0
+H2 vs H1 (d4),41,B,A,2
+H2 vs H1 (d4),42,A,B,2
+H2 vs H1 (d4),42,B,A,2
+H2 vs H1 (d4),43,A,B,2
+H2 vs H1 (d4),43,B,A,0
+H2 vs H1 (d4),44,A,B,1
+H2 vs H1 (d4),44,B,A,2
+H2 vs H1 (d4),45,A,B,2
+H2 vs H1 (d4),45,B,A,2
+H2 vs H1 (d4),46,A,B,2
+H2 vs H1 (d4),46,B,A,2
+H2 vs H1 (d4),50,A,B,1
+H2 vs H1 (d4),50,B,A,2
+H2 vs H1 (d4),51,A,B,2
+H2 vs H1 (d4),51,B,A,1
+H2 vs H1 (d4),52,A,B,1
+H2 vs H1 (d4),52,B,A,2
+H2 vs H1 (d4),53,A,B,2
+H2 vs H1 (d4),53,B,A,1
+H2 vs H1 (d4),54,A,B,2
+H2 vs H1 (d4),54,B,A,1
+H2 vs H1 (d4),55,A,B,1
+H2 vs H1 (d4),55,B,A,1
+H2 vs H1 (d4),56,A,B,2
+H2 vs H1 (d4),56,B,A,1
+H2 vs H1 (d4),60,A,B,1
+H2 vs H1 (d4),60,B,A,2
+H2 vs H1 (d4),61,A,B,2
+H2 vs H1 (d4),61,B,A,1
+H2 vs H1 (d4),62,A,B,1
+H2 vs H1 (d4),62,B,A,1
+H2 vs H1 (d4),63,A,B,2
+H2 vs H1 (d4),63,B,A,2
+H2 vs H1 (d4),64,A,B,1
+H2 vs H1 (d4),64,B,A,1
+H2 vs H1 (d4),65,A,B,2
+H2 vs H1 (d4),65,B,A,1
+H2 vs H1 (d4),66,A,B,1
+H2 vs H1 (d4),66,B,A,1

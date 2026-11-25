@@ -74,11 +74,15 @@ python experiments.py all       # all of the above
 
 Output goes to `results/`, which is not committed. Each run overwrites the previous one.
 
+Graph labels are in Thai, for the presentation. Matplotlib picks the first installed font from Tahoma, Leelawadee UI or DejaVu Sans; without a Thai font the labels show as boxes.
+
 | File | Content |
 |---|---|
 | `nodes.csv`, `nodes.png`, `time.png` | Mean nodes and time per move at each depth |
 | `matches.csv`, `winrate.png` | Every game of every match, and the score of side A |
 | `budget.csv`, `budget.png` | Minimax vs MCTS score, mean depth and MCTS iterations |
+
+In `winrate.png` and `budget.png`, each bar has an approximate 95% (Wilson) interval. Bar colour gives the verdict: green = ahead, orange = behind, grey = interval crosses 50%, so no clear winner.
 
 ### How the matches are run
 
@@ -132,6 +136,7 @@ Minimax (iterative deepening) vs MCTS at equal time per move:
 | `experiments.py` | Experiments, CSV output and graphs |
 | `GLOSSARY.md` | Project vocabulary (Board, Move, Depth, Opening, Paired game, …) |
 | `connect-four-project-summary.md` | Full project plan, in Thai |
+| `connect-four-ai-slides.pptx` | Presentation slides for the demo |
 | `docs/superpowers/plans/` | Step-by-step implementation plans for each round |
 
 ## Tests

@@ -2,6 +2,7 @@
 
 import csv
 import itertools
+import math
 import random
 import statistics
 import sys
@@ -12,6 +13,8 @@ from pathlib import Path
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+from matplotlib.patches import Patch
+from matplotlib.ticker import FuncFormatter, NullFormatter
 
 from ai_minimax import search, iterative_deepening, h1, h2
 from ai_mcts import mcts
@@ -48,25 +51,100 @@ def run_nodes(positions: list[str], plain_depths, ab_depths, out_csv: Path) -> l
     return rows
 
 
+# --- plotting helpers -----------------------------------------------------------
+
+COLOR = {"minimax": "#2b6cb0", "alphabeta": "#e07b00", "mcts": "#6f42c1"}
+VERDICT = {"ahead": "#2f9e44", "behind": "#d9480f", "even": "#868e96"}
+STYLE = {"font.family": ["Tahoma", "Leelawadee UI", "DejaVu Sans"], "font.size": 12, "axes.titlesize": 14, "axes.titleweight": "bold", "axes.titlelocation": "left",
+         "axes.spines.top": False, "axes.spines.right": False, "axes.axisbelow": True}
+MATCH_LABELS = {"d2 vs random": "มอง 2 ตา\nสู้ สุ่มหมาก",
+                "d4 vs d2": "มอง 4 ตา\nสู้ มอง 2 ตา",
+                "d6 vs d4": "มอง 6 ตา\nสู้ มอง 4 ตา",
+                "d6 vs d2": "มอง 6 ตา\nสู้ มอง 2 ตา",
+                "H2 vs H1 (d4)": "สูตรประเมิน H2\nสู้ H1 (มอง 4 ตาเท่ากัน)"}
+
+
+def _human(v: float) -> str:
+    """12345 -> '12.3k', 0.15 -> '0.15': readable log-axis ticks and labels."""
+    if v >= 1e6:
+        return f"{v / 1e6:.3g}M"
+    if v >= 1e3:
+        return f"{v / 1e3:.3g}k"
+    return f"{v:.3g}"
+
+
+def _wilson(points: float, n: int, z: float = 1.96) -> tuple[float, float]:
+    """Approximate 95% interval (in %) for a score of `points` out of `n` games."""
+    p = points / n
+    d = 1 + z * z / n
+    centre = (p + z * z / (2 * n)) / d
+    half = z * math.sqrt(p * (1 - p) / n + z * z / (4 * n * n)) / d
+    return 100 * (centre - half), 100 * (centre + half)
+
+
+def _verdict(lo: float, hi: float) -> str:
+    return "ahead" if lo > 50 else "behind" if hi < 50 else "even"
+
+
+def _legend_and_note(fig, who: str, note: str) -> None:
+    fig.legend(handles=[Patch(color=VERDICT["ahead"], label=f"{who} ชนะชัดเจน"),
+                        Patch(color=VERDICT["behind"], label=f"{who} แพ้ชัดเจน"),
+                        Patch(color=VERDICT["even"], label="สูสี (ผลต่างน้อยเกินกว่าจะสรุปว่าใครเก่งกว่า)")],
+               loc="lower center", ncol=3, frameon=False, bbox_to_anchor=(0.5, 0.045))
+    fig.text(0.01, 0.01, note, fontsize=9, color="#555")
+
+
 def plot(csv_path: Path, out_dir: Path) -> None:
     with open(csv_path, newline="") as f:
         rows = list(csv.DictReader(f))
-    for metric, fname, ylabel in (("nodes", "nodes.png", "Nodes expanded (mean)"),
-                                  ("ms", "time.png", "Time per move, ms (mean)")):
-        fig, ax = plt.subplots(figsize=(6, 4))
-        for algo in ("minimax", "alphabeta"):
-            depths = sorted({int(r["depth"]) for r in rows if r["algo"] == algo})
-            means = [statistics.mean(float(r[metric]) for r in rows
-                                     if r["algo"] == algo and int(r["depth"]) == d) for d in depths]
-            ax.plot(depths, means, marker="o", label="alpha-beta" if algo == "alphabeta" else "minimax")
-        ax.set_yscale("log")
-        ax.set_xlabel("Search depth")
-        ax.set_ylabel(ylabel)
-        ax.legend()
-        ax.grid(True, which="both", alpha=0.3)
-        fig.tight_layout()
-        fig.savefig(out_dir / fname, dpi=150)
-        plt.close(fig)
+    n_pos = len({r["position"] for r in rows})
+    names = {"minimax": "Minimax ธรรมดา", "alphabeta": "Alpha-beta (ตัดกิ่ง)"}
+    specs = (("nodes", "nodes.png", "จำนวนตำแหน่งที่ AI ต้องค้นต่อ 1 ตา (แกน log)", "",
+              lambda r, d: f"Alpha-beta ค้นตำแหน่งน้อยลง {r[:-1]} เท่า (มองล่วงหน้า {d} ตา)"),
+             ("ms", "time.png", "เวลาคิดต่อ 1 ตา (แกน log)", " ms",
+              lambda r, d: f"Alpha-beta คิดเร็วขึ้น {r[:-1]} เท่า (มองล่วงหน้า {d} ตา)"))
+    with plt.rc_context(STYLE):
+        for metric, fname, ylabel, unit, title in specs:
+            stats = {}
+            for algo in names:
+                stats[algo] = {}
+                for d in sorted({int(r["depth"]) for r in rows if r["algo"] == algo}):
+                    v = [float(r[metric]) for r in rows if r["algo"] == algo and int(r["depth"]) == d]
+                    stats[algo][d] = (statistics.mean(v), min(v), max(v))
+            fig, ax = plt.subplots(figsize=(8.5, 5.2))
+            for algo, label in names.items():
+                ds = list(stats[algo])
+                ax.fill_between(ds, [stats[algo][d][1] for d in ds], [stats[algo][d][2] for d in ds],
+                                color=COLOR[algo], alpha=0.15, linewidth=0)
+                ax.plot(ds, [stats[algo][d][0] for d in ds], marker="o", markersize=7, linewidth=2.5,
+                        color=COLOR[algo])
+                end = stats[algo][ds[-1]][0]
+                ax.annotate(f"{label}\n{_human(end)}{unit}", (ds[-1], end), xytext=(10, 0),
+                            textcoords="offset points", va="center", color=COLOR[algo], fontweight="bold")
+            dmax = max(set(stats["minimax"]) & set(stats["alphabeta"]))
+            mm, ab = stats["minimax"][dmax][0], stats["alphabeta"][dmax][0]
+            ratio = mm / ab
+            ratio_text = f"{ratio:.0f}\u00d7" if ratio >= 10 else f"{ratio:.1f}\u00d7"
+            ax.annotate("", xy=(dmax, ab), xytext=(dmax, mm),
+                        arrowprops=dict(arrowstyle="<->", color="#333", lw=1.6))
+            ax.text(dmax - 0.12, math.sqrt(mm * ab), ratio_text, ha="right", va="center",
+                    fontsize=15, fontweight="bold", color="#333")
+            ax.set_yscale("log")
+            ax.yaxis.set_major_formatter(FuncFormatter(lambda v, _: _human(v)))
+            ax.yaxis.set_minor_formatter(NullFormatter())
+            depths = sorted(set(stats["minimax"]) | set(stats["alphabeta"]))
+            ax.set_xticks(depths)
+            ax.set_xlim(depths[0] - 0.3, depths[-1] + 1.3)
+            ax.grid(axis="y", alpha=0.3)
+            ax.set_xlabel("AI มองล่วงหน้ากี่ตา (ยิ่งมาก ยิ่งฉลาด แต่ช้าลง)")
+            ax.set_ylabel(ylabel)
+            ax.set_title(title(ratio_text, dmax))
+            fig.text(0.01, 0.01, f"วิธีอ่าน: เส้น = ค่าเฉลี่ยจาก {n_pos} ท่าเปิด, แถบจาง = ช่วงต่ำสุดถึงสูงสุด\n"
+                                 "แกนตั้งเป็น log: เส้นตารางแต่ละขั้นคือมากขึ้น 10 เท่า "
+                                 "(ยิ่งเส้นอยู่ต่ำ ยิ่งประหยัด)", fontsize=10, color="#555")
+            fig.tight_layout(rect=(0, 0.08, 1, 1))
+            fig.savefig(out_dir / fname, dpi=200)
+            plt.close(fig)
 
 
 # --- agents: callables Board -> column ---------------------------------------
@@ -164,22 +242,45 @@ def plot_matches(csv_path: Path, out_dir: Path) -> None:
     with open(csv_path, newline="") as f:
         rows = list(csv.DictReader(f))
     names = list(dict.fromkeys(r["match"] for r in rows))
-    pcts = []
+    stats = []
     for n in names:
         games = [r for r in rows if r["match"] == n]
-        pts = sum(0.5 if r["result"] == "0" else
-                  1.0 if (r["result"] == str(RED)) == (r["red"] == "A") else 0.0 for r in games)
-        pcts.append(100 * pts / len(games))
-    fig, ax = plt.subplots(figsize=(7, 0.6 * len(names) + 1.5))
-    bars = ax.barh(names[::-1], pcts[::-1])
-    ax.bar_label(bars, fmt="%.1f%%", padding=3)
-    ax.axvline(50, color="grey", linestyle="--", linewidth=1)
-    ax.set_xlim(0, 110)
-    ax.set_xlabel("Score of A (win 1, draw 0.5), % of games")
-    ax.set_title(f"Paired games: 49 openings x 2 sides")
-    fig.tight_layout()
-    fig.savefig(out_dir / "winrate.png", dpi=150)
-    plt.close(fig)
+        won = lost = drawn = 0
+        for r in games:
+            if r["result"] == "0":
+                drawn += 1
+            elif (r["result"] == str(RED)) == (r["red"] == "A"):
+                won += 1
+            else:
+                lost += 1
+        pts = won + drawn / 2
+        lo, hi = _wilson(pts, len(games))
+        stats.append((n, 100 * pts / len(games), lo, hi, won, drawn, lost))
+    n_open = len({r["opening"] for r in rows})
+    per_match = len(rows) // len(names)
+    with plt.rc_context(STYLE):
+        fig, ax = plt.subplots(figsize=(11, 0.95 * len(names) + 2.9))
+        ys = list(range(len(names)))[::-1]
+        for y, (n, pct, lo, hi, won, drawn, lost) in zip(ys, stats):
+            ax.barh(y, pct, color=VERDICT[_verdict(lo, hi)], height=0.6)
+            ax.errorbar(pct, y, xerr=[[max(0, pct - lo)], [max(0, hi - pct)]], color="#222", capsize=4, lw=1.5)
+            ax.text(104, y, f"{pct:.1f}%   (ชนะ {won} เสมอ {drawn} แพ้ {lost})", va="center", fontsize=11)
+        ax.axvline(50, color="#555", linestyle="--", linewidth=1)
+        ax.text(50, len(names) - 0.3, "เสมอกัน (50%)", ha="center", va="bottom", color="#555", fontsize=10, bbox=dict(facecolor="white", edgecolor="none", pad=1.5))
+        ax.set_ylim(-0.6, len(names) - 0.1)
+        ax.spines["bottom"].set_bounds(0, 100)
+        ax.set_yticks(ys, [MATCH_LABELS.get(n, n) for n, *_ in stats])
+        ax.tick_params(axis="y", length=0)
+        ax.set_xlim(0, 155)
+        ax.set_xticks(range(0, 101, 25), [f"{v}%" for v in range(0, 101, 25)])
+        ax.set_xlabel("คะแนนของ AI ฝั่งที่ชื่ออยู่ก่อน (ชนะ = 1 เสมอ = \u00bd)  ยิ่งเกิน 50% ยิ่งเก่งกว่า", loc="left")
+        ax.set_title("AI ตัวไหนชนะ? ให้เล่นกันเองหลายเกม", pad=18)
+        fig.tight_layout(rect=(0, 0.12, 1, 1))
+        _legend_and_note(fig, "AI ฝั่งแรก",
+                         f"วิธีอ่าน: แท่งยาวเกินเส้น 50% = ฝั่งแรกชนะมากกว่า | {n_open} ท่าเปิด \u00d7 สลับข้าง 2 รอบ = {per_match} เกมต่อคู่\n"
+                         "เส้นดำ = ช่วงความเชื่อมั่น 95% โดยประมาณ ถ้าคร่อมเส้น 50% แปลว่ายังสรุปไม่ได้ว่าใครเก่งกว่า")
+        fig.savefig(out_dir / "winrate.png", dpi=200)
+        plt.close(fig)
 
 
 # --- minimax (iterative deepening) vs MCTS at equal time per move ---------------
@@ -217,27 +318,50 @@ def plot_budget(csv_path: Path, out_dir: Path) -> None:
     with open(csv_path, newline="") as f:
         rows = list(csv.DictReader(f))
     labels = [f"{float(r['budget']):g} s" for r in rows]
-    pct = [100 * float(r["minimax_points"]) / int(r["games"]) for r in rows]
-    fig, (left, right) = plt.subplots(1, 2, figsize=(10, 4))
-    bars = left.bar(labels, pct)
-    left.bar_label(bars, fmt="%.1f%%")
-    left.axhline(50, color="grey", linestyle="--", linewidth=1)
-    left.set_ylim(0, 110)
-    left.set_xlabel("Time per move")
-    left.set_ylabel("Minimax (ID) score, % of games")
-    left.set_title("Minimax vs MCTS, equal time")
-    # Bars labelled with both numbers: twin-axis lines overlap exactly when there are only two budgets.
-    depth = [float(r["mean_id_depth"]) for r in rows]
-    effort = right.bar(labels, depth, color="C0")
-    right.bar_label(effort, labels=[f"depth {d:.2f}\nMCTS {int(r['mean_mcts_iterations']):,} iters"
-                                    for d, r in zip(depth, rows)])
-    right.set_ylim(0, max(depth) * 1.3)
-    right.set_xlabel("Time per move")
-    right.set_ylabel("Mean depth reached by minimax (ID)")
-    right.set_title("Search effort per move")
-    fig.tight_layout()
-    fig.savefig(out_dir / "budget.png", dpi=150)
-    plt.close(fig)
+    xs = range(len(rows))
+    with plt.rc_context(STYLE):
+        fig, (a1, a2, a3) = plt.subplots(1, 3, figsize=(13.5, 5.4), gridspec_kw={"width_ratios": [1.3, 1, 1]})
+        for i, r in enumerate(rows):
+            n, pts = int(r["games"]), float(r["minimax_points"])
+            pct, (lo, hi) = 100 * pts / n, _wilson(pts, n)
+            a1.bar(i, pct, color=VERDICT[_verdict(lo, hi)], width=0.6)
+            a1.errorbar(i, pct, yerr=[[max(0, pct - lo)], [max(0, hi - pct)]], color="#222", capsize=5, lw=1.5)
+            a1.text(i, hi + 2, f"{pct:.1f}%", ha="center", fontweight="bold")
+        a1.axhline(50, color="#555", linestyle="--", linewidth=1)
+        if len(rows) > 1:
+            a1.text((len(rows) - 1) / 2, 50, "เสมอกัน", ha="center", va="center", color="#555", fontsize=10,
+                    bbox=dict(facecolor="white", edgecolor="none", pad=1.5))
+        a1.set_ylim(0, 100)
+        a1.yaxis.set_major_formatter(FuncFormatter(lambda v, _: f"{v:.0f}%"))
+        a1.set_ylabel("คะแนน Minimax (ชนะ = 1 เสมอ = \u00bd)")
+        a1.set_title("ใครชนะ?")
+        depth = [float(r["mean_id_depth"]) for r in rows]
+        a2.bar(xs, depth, color=COLOR["minimax"], width=0.6)
+        for i, d in enumerate(depth):
+            a2.text(i, d + 0.15, f"{d:.1f}", ha="center", fontweight="bold")
+        a2.set_ylim(0, max(depth) * 1.2)
+        a2.set_ylabel("มองล่วงหน้าเฉลี่ยกี่ตา")
+        a2.set_title("Minimax มองลึกแค่ไหน")
+        iters = [int(float(r["mean_mcts_iterations"])) for r in rows]
+        a3.bar(xs, iters, color=COLOR["mcts"], width=0.6)
+        for i, v in enumerate(iters):
+            a3.text(i, v + max(iters) * 0.015, f"{v:,}", ha="center", fontweight="bold")
+        a3.set_ylim(0, max(iters) * 1.2)
+        a3.yaxis.set_major_formatter(FuncFormatter(lambda v, _: _human(v)))
+        a3.set_ylabel("จำนวนเกมจำลองเฉลี่ยต่อ 1 ตา")
+        a3.set_title("MCTS จำลองเกมกี่รอบ")
+        for ax in (a1, a2, a3):
+            ax.set_xticks(list(xs), labels)
+            ax.set_xlabel("เวลาคิดที่ให้ต่อ 1 ตา")
+            ax.grid(axis="y", alpha=0.3)
+        fig.suptitle("Minimax สู้ MCTS เมื่อให้เวลาคิดเท่ากัน", x=0.01, ha="left",
+                     fontsize=16, fontweight="bold")
+        fig.tight_layout(rect=(0, 0.12, 1, 0.95))
+        _legend_and_note(fig, "Minimax",
+                         f"วิธีอ่าน: แท่งเกินเส้น 50% = Minimax ชนะมากกว่า | {int(rows[0]['games'])} เกมต่อการตั้งค่า (ทุกท่าเปิด สลับข้าง)\n"
+                         "เส้นดำ = ช่วงความเชื่อมั่น 95% โดยประมาณ | MCTS ตัดสินด้วยนาฬิกา รันซ้ำตัวเลขจะต่างเล็กน้อย")
+        fig.savefig(out_dir / "budget.png", dpi=200)
+        plt.close(fig)
 
 
 # --- entry points ---------------------------------------------------------------
